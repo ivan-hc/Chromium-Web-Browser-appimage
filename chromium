@@ -1,0 +1,84 @@
+#!/bin/sh
+
+APP=chromium
+
+# CREATING THE FOLDER
+mkdir /opt/$APP
+cd /opt/$APP;
+
+# ADD THE REMOVER
+echo '#!/bin/sh' >> /opt/$APP/remove
+echo "rm -R -f /usr/share/applications/AM-$APP.desktop /opt/$APP /usr/local/bin/$APP" >> /opt/$APP/remove
+chmod a+x /opt/$APP/remove
+
+mkdir tmp;
+cd tmp;
+
+# DOWNLOADING THE DEPENDENCIES
+wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$(uname -m).AppImage -O appimagetool
+wget https://raw.githubusercontent.com/ivan-hc/AM-application-manager/main/tools/pkg2appimage # 64 BIT ONLY (comment to disable)
+# wget https://github.com/ivan-hc/pkg2appimage-32bit/releases/download/continuous/pkg2appimage-i386.AppImage -O pkg2appimage # 32 BIT ONLY (uncomment to enable)
+chmod a+x ./appimagetool ./pkg2appimage
+
+# CREATING THE APPIMAGE: APPDIR FROM A RECIPE...
+echo "app: chromium-browser
+binpatch: true
+ingredients:
+  dist: bionic
+  sources:
+    - deb http://archive.ubuntu.com/ubuntu/ bionic main universe restricted multiverse
+    - deb http://archive.ubuntu.com/ubuntu bionic-security main universe restricted multiverse
+    - deb http://archive.ubuntu.com/ubuntu/ bionic-updates main universe restricted multiverse
+  ppas:
+    - savoury1/chromium
+    - savoury1/build-tools
+    - savoury1/llvm-defaults-12
+    - savoury1/backports
+    - savoury1/python
+    - savoury1/gpg
+    - savoury1/fonts
+    - savoury1/graphics
+    - savoury1/multimedia
+    - savoury1/ffmpeg4
+    - savoury1/display
+    packages:
+    - chromium-browser
+    - chromium-browser-l10n
+    - chromium-chromedriver
+    - chromium-codecs-ffmpeg-extra
+    - chromium-codecs-ffmpeg-extra" >> recipe.yml;
+
+cp /opt/$APP/tmp/recipe.yml /opt/$APP/recipe.yml
+
+./pkg2appimage ./recipe.yml;
+cp /opt/$APP/tmp/$APP-browser/$APP-browser.AppDir/$APP-browser.png /opt/$APP/$APP.png
+
+# ...REPLACING THE EXISTING APPRUN WITH A CUSTOM ONE...
+rm -R -f ./$APP-browser/$APP-browser.AppDir/AppRun
+cat >> ./$APP-browser/$APP-browser.AppDir/AppRun << 'EOF'
+#!/bin/sh
+HERE="$(dirname "$(readlink -f "${0}")")"
+export UNION_PRELOAD="${HERE}"
+export PATH="${HERE}"/usr/bin/:"${HERE}"/usr/sbin/:"${HERE}"/usr/games/:"${PATH}"
+export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu/:"${HERE}"/usr/lib/:"${HERE}"/usr/lib/i386-linux-gnu/:"${HERE}"/usr/lib/x86_64-linux-gnu/:"${HERE}"/lib/:"${HERE}"/lib/i386-linux-gnu/:"${HERE}"/lib/x86_64-linux-gnu/:"${LD_LIBRARY_PATH}"
+export PYTHONPATH="${HERE}"/usr/share/pyshared/:"${HERE}"/usr/lib/python*/:"${PYTHONPATH}"
+export PYTHONHOME="${HERE}"/usr/:"${HERE}"/usr/lib/python*/
+export XDG_DATA_DIRS="${HERE}"/usr/share/:"${XDG_DATA_DIRS}"
+exec ${HERE}/usr/lib/chromium-browser/chromium-browser "$@"
+EOF
+chmod a+x ./$APP-browser/$APP-browser.AppDir/AppRun
+
+# ...EXPORT THE APPDIR TO AN APPIMAGE!
+ARCH=x86_64 ./appimagetool -n ./$APP-browser/$APP-browser.AppDir;
+
+cd ..;
+mv ./tmp/*.AppImage ./$APP;
+chmod a+x ./$APP
+
+rm -R -f ./tmp
+
+echo "
+
+ Chromium is provided by https://www.chromium.org
+  
+";
