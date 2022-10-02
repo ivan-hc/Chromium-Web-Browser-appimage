@@ -1,0 +1,50 @@
+name: Release Chromium Appimage
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  schedule:
+    - cron: "0 14 * * 0-6"
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: build
+      run: |
+        wget https://raw.githubusercontent.com/ivan-hc/Chromium-Web-Browser-appimage/main/chromium
+        chmod a+x ./chromium
+        sudo ./chromium
+        mkdir dist
+        VERSION=$(curl -s https://launchpad.net/~savoury1/+archive/ubuntu/chromium | grep "latest stable release" | head -1 | grep -Eo "[0-9]+([.][0-9]+)?+[+-]?[0-9]?")
+        mv /opt/chromium/chromium dist/Chromium-Web-Browser-$VERSION-x86_64.AppImage
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: Chromium-Web-Browser-x86_64.AppImage
+        path: 'dist'
+        
+  release:
+      needs: [build]
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/download-artifact@v1
+          with:
+            name: Chromium-Web-Browser-x86_64.AppImage
+
+        - name: release
+          uses: marvinpinto/action-automatic-releases@latest
+          with:
+            title: Continuous build
+            automatic_release_tag: continuous
+            prerelease: false
+            draft: false
+            files: |
+              Chromium-Web-Browser-x86_64.AppImage
+            repo_token: ${{ secrets.GITHUB_TOKEN }}
