@@ -41,11 +41,11 @@ ingredients:
     - savoury1/multimedia
     - savoury1/ffmpeg4
     - savoury1/display
-    packages:
+  packages:
     - chromium-browser
     - chromium-browser-l10n
     - chromium-chromedriver
-    - chromium-codecs-ffmpeg-extra
+    - chromium-codecs-ffmpeg
     - chromium-codecs-ffmpeg-extra" >> recipe.yml;
 
 cp /opt/$APP/tmp/recipe.yml /opt/$APP/recipe.yml
