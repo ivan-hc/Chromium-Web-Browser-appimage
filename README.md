@@ -1,5 +1,10 @@
 This repository provides the script to create the latest version from https://launchpad.net/~savoury1 and a daily updated AppImage package ready to be used.
 
+# Troubleshoot
+AppImages based on Electron require the kernel to be configured in a certain way to allow for its sandboxing to work as intended (specifically, the kernel needs to be allowed to provide “unprivileged namespaces”). Many distributions come with this configured out of the box (like Ubuntu for instance), but some do not (for example Debian), and the AppImage works only with the `--no-sandbox` option. 
+
+For more, visit https://docs.appimage.org/user-guide/troubleshooting/electron-sandboxing.html
+
 # About Rob Savoury's PPA 
 SITE: https://launchpad.net/~savoury1
 
