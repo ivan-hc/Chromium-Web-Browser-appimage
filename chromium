@@ -21,14 +21,15 @@ wget https://raw.githubusercontent.com/ivan-hc/AM-application-manager/main/tools
 chmod a+x ./appimagetool ./pkg2appimage
 
 # CREATING THE APPIMAGE: APPDIR FROM A RECIPE...
+PREVIOUSLTS=$(wget -q https://releases.ubuntu.com/ -O - | grep class | grep LTS | grep -m2 href | tail -n1 | sed -n 's/.*href="\([^"]*\).*/\1/p' | rev| cut -c 2- | rev)
 echo "app: chromium-browser
 binpatch: true
 ingredients:
-  dist: bionic
+  dist: $PREVIOUSLTS
   sources:
-    - deb http://archive.ubuntu.com/ubuntu/ bionic main universe restricted multiverse
-    - deb http://archive.ubuntu.com/ubuntu bionic-security main universe restricted multiverse
-    - deb http://archive.ubuntu.com/ubuntu/ bionic-updates main universe restricted multiverse
+    - deb http://archive.ubuntu.com/ubuntu/ $PREVIOUSLTS main universe restricted multiverse
+    - deb http://archive.ubuntu.com/ubuntu $PREVIOUSLTS-security main universe restricted multiverse
+    - deb http://archive.ubuntu.com/ubuntu/ $PREVIOUSLTS-updates main universe restricted multiverse
   ppas:
     - savoury1/chromium
     - savoury1/build-tools
