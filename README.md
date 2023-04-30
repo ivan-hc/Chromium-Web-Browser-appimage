@@ -5,7 +5,24 @@ AppImages based on Electron require the kernel to be configured in a certain way
 
 For more, visit https://docs.appimage.org/user-guide/troubleshooting/electron-sandboxing.html
 
-# About Rob Savoury's PPA 
+# How to integrate Chromium AppImage into the system
+The easier way is to install "AM" on your PC, see [ivan-hc/AM-application-manager](https://github.com/ivan-hc/AM-application-manager) for more.
+
+Alternatively, you can install it this way:
+
+    wget https://raw.githubusercontent.com/ivan-hc/AM-Application-Manager/main/programs/x86_64/chromium
+    chmod a+x ./chromium
+    sudo ./chromium
+The AppImage will be installed in /opt/chromium as `chromium`, near other files.
+### Update
+
+    /opt/chromium/AM-updater
+### Uninstall
+
+    sudo /opt/chromium/remove
+
+------------------------------------
+# About Rob Savoury's PPA  
 SITE: https://launchpad.net/~savoury1
 
 This is a collection of PPAs giving significant upgrades for the past 6+ years of Ubuntu (LTS) releases. Popular software here: Blender, Chromium, digiKam, FFmpeg, GIMP, GPG, Inkscape, LibreOffice, mpv, Scribus, Telegram, and VLC.
