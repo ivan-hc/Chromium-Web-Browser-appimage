@@ -54,6 +54,8 @@ export PYTHONHOME="${HERE}"/usr/:"${HERE}"/usr/lib/python*/
 export XDG_DATA_DIRS="${HERE}"/usr/share/:"${XDG_DATA_DIRS}"
 exec ${HERE}/usr/lib/chromium-browser/chromium-browser "$@"
 EOF
+sed -i 's/x86_64/i386/g' ./$APP-browser/$APP-browser.AppDir/AppRun
+sed -i 's/64/x32/g' ./$APP-browser/$APP-browser.AppDir/AppRun
 chmod a+x ./$APP-browser/$APP-browser.AppDir/AppRun
 
 # ...EXPORT THE APPDIR TO AN APPIMAGE!
