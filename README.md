@@ -2,6 +2,8 @@ This repository provides the latest version of Chromium Web Browser for Debian O
 
 The .deb packages are provided by the Security Team you can see get more info at https://packages.debian.org/oldstable/chromium
 
+*NOTE: the 32-bit version for the old i386 architectures is available at [ivan-hc/32-bit-AppImage-packages-database](https://github.com/ivan-hc/32-bit-AppImage-packages-database), download it from [here](https://github.com/ivan-hc/32-bit-AppImage-packages-database/releases/tag/chromium).*
+
 # Troubleshoot
 AppImages based on Electron require the kernel to be configured in a certain way to allow for its sandboxing to work as intended (specifically, the kernel needs to be allowed to provide “unprivileged namespaces”). Many distributions come with this configured out of the box (like Ubuntu for instance), but some do not (for example Debian), and the AppImage works only with the `--no-sandbox` option. 
 
