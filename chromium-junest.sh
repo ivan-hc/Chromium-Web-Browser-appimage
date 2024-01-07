@@ -3,7 +3,7 @@
 # NAME OF THE APP BY REPLACING "SAMPLE"
 APP=chromium
 BIN="$APP" #CHANGE THIS IF THE NAME OF THE BINARY IS DIFFERENT FROM "$APP" (for example, the binary of "obs-studio" is "obs")
-DEPENDENCES="ca-certificates"
+DEPENDENCES=""
 #BASICSTUFF="binutils gzip"
 #COMPILERS="base-devel"
 
@@ -99,7 +99,7 @@ export JUNEST_HOME=$HERE/.junest
 export PATH=$PATH:$HERE/.local/share/junest/bin
 mkdir -p $HOME/.cache
 EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2- | sed -e 's|%.||g')
-$HERE/.local/share/junest/bin/junest proot -n -b "--bind=/home --bind=/home/$(echo $USER) --bind=/media --bind=/mnt --bind=/opt --bind=/usr/lib/locale --bind=/etc --bind=/usr/share/fonts --bind=/usr/share/themes" 2> /dev/null -- $EXEC --no-sandbox -test-type "$@"
+$HERE/.local/share/junest/bin/junest -n 2> /dev/null -- $EXEC "$@"
 EOF
 chmod a+x ./AppRun
 
@@ -107,6 +107,7 @@ chmod a+x ./AppRun
 sed -i 's#${JUNEST_HOME}/usr/bin/junest_wrapper#${HOME}/.cache/junest_wrapper.old#g' ./.local/share/junest/lib/core/wrappers.sh
 sed -i 's/rm -f "${JUNEST_HOME}${bin_path}_wrappers/#rm -f "${JUNEST_HOME}${bin_path}_wrappers/g' ./.local/share/junest/lib/core/wrappers.sh
 sed -i 's/ln/#ln/g' ./.local/share/junest/lib/core/wrappers.sh
+sed -i 's#--bind "$HOME" "$HOME"#--bind /opt /opt --bind /usr/lib/locale /usr/lib/locale --bind /etc /etc --bind /usr/share/fonts /usr/share/fonts --bind /usr/share/themes /usr/share/themes --bind /mnt /mnt --bind /media /media --bind /home /home --bind /run/user /run/user#g' .local/share/junest/lib/core/namespace.sh
 
 # EXIT THE APPDIR
 cd ..
@@ -115,12 +116,46 @@ cd ..
 mkdir base
 tar fx $APP.AppDir/.junest/var/cache/pacman/pkg/$APP*.zst -C ./base/
 
-DEPS=$(cat ./base/.PKGINFO | grep "depend = " | grep -v "makedepend = " | cut -c 10- | grep -v "=\|>\|<")
 mkdir deps
+
+ARGS=$(echo "$DEPENDENCES" | tr " " "\n")
+for arg in $ARGS; do
+	for var in $arg; do
+ 		tar fx $APP.AppDir/.junest/var/cache/pacman/pkg/$arg*.zst -C ./deps/
+		cat ./deps/.PKGINFO | grep "depend = " | grep -v "makedepend = " | cut -c 10- | grep -v "=\|>\|<" > depdeps
+	done
+done
+
+DEPS=$(cat ./base/.PKGINFO | grep "depend = " | grep -v "makedepend = " | cut -c 10- | grep -v "=\|>\|<")
 for arg in $DEPS; do
 	for var in "$arg"; do
  		tar fx $APP.AppDir/.junest/var/cache/pacman/pkg/"$arg"*.zst -C ./deps/
+ 		cat ./deps/.PKGINFO | grep "depend = " | grep -v "makedepend = " | cut -c 10- | grep -v "=\|>\|<" > depdeps
 	done
+done
+
+DEPS2=$(cat ./depdeps | uniq)
+for arg in $DEPS2; do
+	for var in "$arg"; do
+ 		tar fx $APP.AppDir/.junest/var/cache/pacman/pkg/"$arg"*.zst -C ./deps/
+ 		cat ./deps/.PKGINFO | grep "depend = " | grep -v "makedepend = " | cut -c 10- | grep -v "=\|>\|<" > depdeps2
+ 	done
+done
+
+DEPS3=$(cat ./depdeps2 | uniq)
+for arg in $DEPS3; do
+	for var in "$arg"; do
+ 		tar fx $APP.AppDir/.junest/var/cache/pacman/pkg/"$arg"*.zst -C ./deps/
+ 		cat ./deps/.PKGINFO | grep "depend = " | grep -v "makedepend = " | cut -c 10- | grep -v "=\|>\|<" > depdeps3
+ 	done
+done
+
+DEPS4=$(cat ./depdeps3 | uniq)
+for arg in $DEPS4; do
+	for var in "$arg"; do
+ 		tar fx $APP.AppDir/.junest/var/cache/pacman/pkg/"$arg"*.zst -C ./deps/
+ 		cat ./deps/.PKGINFO | grep "depend = " | grep -v "makedepend = " | cut -c 10- | grep -v "=\|>\|<" > depdeps4
+ 	done
 done
 
 # REMOVE SOME BLOATWARES
@@ -136,9 +171,9 @@ rm -R -f ./$APP.AppDir/.junest/var/* #REMOVE ALL PACKAGES DOWNLOADED WITH THE PA
 # WE WILL MOVE EXCESS CONTENT TO BACKUP FOLDERS (STEP 1)
 # THE AFFECTED DIRECTORIES WILL BE /usr/bin (STEP 2), /usr/lib (STEP 3) AND /usr/share (STEP 4)
 
-BINSAVED="certificate" # Enter here keywords to find and save in /usr/bin
-SHARESAVED="certificate" # Enter here keywords or file/folder names to save in both /usr/share and /usr/lib
-LIBSAVED="alsa certificate jack pipewire pulse" # Enter here keywords or file/folder names to save in /usr/lib
+BINSAVED="SAVEBINSPLEASE" # Enter here keywords to find and save in /usr/bin
+SHARESAVED="SAVESHAREPLEASE" # Enter here keywords or file/folder names to save in both /usr/share and /usr/lib
+LIBSAVED="alsa jack pipewire pulse chromium" # Enter here keywords or file/folder names to save in /usr/lib
 
 # STEP 1, CREATE A BACKUP FOLDER WHERE TO SAVE THE FILES TO BE DISCARDED (USEFUL FOR TESTING PURPOSES)
 mkdir -p ./junest-backups/usr/bin
@@ -151,9 +186,10 @@ _savebins(){
 	mkdir save
 	mv ./$APP.AppDir/.junest/usr/bin/*$BIN* ./save/
 	mv ./$APP.AppDir/.junest/usr/bin/bash ./save/
+ 	mv ./$APP.AppDir/.junest/usr/bin/bwrap ./save/
 	mv ./$APP.AppDir/.junest/usr/bin/env ./save/
-	mv ./$APP.AppDir/.junest/usr/bin/proot* ./save/
 	mv ./$APP.AppDir/.junest/usr/bin/sh ./save/
+ 	mv ./$APP.AppDir/.junest/usr/bin/tr ./save/
 	for arg in $BINSAVED; do
 		for var in $arg; do
  			mv ./$APP.AppDir/.junest/usr/bin/*"$arg"* ./save/
@@ -239,7 +275,7 @@ _mvlibs(){
  	rsync -av ./base/usr/lib/* ./$APP.AppDir/.junest/usr/lib/
 }
 
-#_binlibs 2> /dev/null
+_binlibs 2> /dev/null
 
 #_include_swrast_dri 2> /dev/null
 
@@ -279,9 +315,14 @@ _saveshare(){
 }
 _saveshare 2> /dev/null
 
+# RSYNC DEPENDENCES
+#rsync -av ./deps/usr/bin/* ./$APP.AppDir/.junest/usr/bin/
+rsync -av ./deps/usr/lib/* ./$APP.AppDir/.junest/usr/lib/
+#rsync -av ./deps/usr/share/* ./$APP.AppDir/.junest/usr/share/
+
 # ADDITIONAL REMOVALS
 #mv ./$APP.AppDir/.junest/usr/lib/libLLVM-* ./junest-backups/usr/lib/ #INCLUDED IN THE COMPILATION PHASE, CAN SOMETIMES BE EXCLUDED FOR DAILY USE
-#rm -R -f ./$APP.AppDir/.junest/usr/lib/python*/__pycache__/* #IF PYTHON IS INSTALLED, REMOVING THIS DIRECTORY CAN SAVE SEVERAL MEGABYTES
+rm -R -f ./$APP.AppDir/.junest/usr/lib/python*/__pycache__/* #IF PYTHON IS INSTALLED, REMOVING THIS DIRECTORY CAN SAVE SEVERAL MEGABYTES
 
 # REMOVE THE INBUILT HOME
 rm -R -f ./$APP.AppDir/.junest/home
@@ -289,7 +330,11 @@ rm -R -f ./$APP.AppDir/.junest/home
 # ENABLE MOUNTPOINTS
 mkdir -p ./$APP.AppDir/.junest/home
 mkdir -p ./$APP.AppDir/.junest/media
+mkdir -p ./$APP.AppDir/.junest/usr/lib/locale
+mkdir -p ./$APP.AppDir/.junest/usr/share/fonts
+mkdir -p ./$APP.AppDir/.junest/usr/share/themes
+mkdir -p ./$APP.AppDir/.junest/run/user
 
 # CREATE THE APPIMAGE
 ARCH=x86_64 ./appimagetool -n ./$APP.AppDir
-mv ./*AppImage ./"$(cat ./$APP.AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"_"$VERSION""$VERSIONAUR"-archimage2.1-4-x86_64.AppImage
+mv ./*AppImage ./"$(cat ./$APP.AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"_"$VERSION""$VERSIONAUR"-archimage3-x86_64.AppImage
