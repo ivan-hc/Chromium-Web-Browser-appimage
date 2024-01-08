@@ -1,6 +1,6 @@
-This repository provides the latest version of Chromium Web Browser for Debian Oldstable.
-
-The .deb packages are provided by the Security Team you can see get more info at https://packages.debian.org/oldstable/chromium
+This repository provides the latest version of Chromium Web Browser:
+- From here you can download the script "[chromium-junest.sh](https://github.com/ivan-hc/Chromium-Web-Browser-appimage/blob/main/chromium-junest.sh)" to build on top of [JuNest](https://github.com/fsquillace/junest), the lightweight Arch Linux based distro that runs, without root privileges, on top of any other Linux distro. You can download the AppImage from [here](https://github.com/ivan-hc/Chromium-Web-Browser-appimage/releases/tag/continuous);
+- The .deb packages instead are provided by the Security Team of Debian (Oldstable), you can see get more info [here](https://packages.debian.org/oldstable/chromium). Until January 2024 I used this as a base, but the Arch Linux base (via the "ArchImage" project) gave me more guarantees of continuity than Debian. If you prefer Debian base, I recommend you fork this repository and modify the "[workflow run](https://github.com/ivan-hc/Chromium-Web-Browser-appimage/blob/main/.github/workflows/blank.yml)" redirecting it to the "[chromium](https://github.com/ivan-hc/Chromium-Web-Browser-appimage/blob/main/chromium)" script available in this repository.
 
 *NOTE: the 32-bit version for the old i386 architectures is available at [ivan-hc/32-bit-AppImage-packages-database](https://github.com/ivan-hc/32-bit-AppImage-packages-database), download it from [here](https://github.com/ivan-hc/32-bit-AppImage-packages-database/releases/tag/chromium).*
 
@@ -8,22 +8,6 @@ The .deb packages are provided by the Security Team you can see get more info at
 AppImages based on Electron require the kernel to be configured in a certain way to allow for its sandboxing to work as intended (specifically, the kernel needs to be allowed to provide “unprivileged namespaces”). Many distributions come with this configured out of the box (like Ubuntu for instance), but some do not (for example Debian), and the AppImage works only with the `--no-sandbox` option. 
 
 For more, visit https://docs.appimage.org/user-guide/troubleshooting/electron-sandboxing.html
-
-# How to integrate Chromium AppImage into the system
-The easier way is to install "AM" on your PC, see [ivan-hc/AM-application-manager](https://github.com/ivan-hc/AM-application-manager) for more.
-
-Alternatively, you can install it this way:
-
-    wget https://raw.githubusercontent.com/ivan-hc/AM-Application-Manager/main/programs/x86_64/chromium
-    chmod a+x ./chromium
-    sudo ./chromium
-The AppImage will be installed in /opt/chromium as `chromium`, near other files.
-### Update
-
-    /opt/chromium/AM-updater
-### Uninstall
-
-    sudo /opt/chromium/remove
 
 ---------------------------------
 
