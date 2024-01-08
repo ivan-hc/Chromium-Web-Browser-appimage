@@ -27,7 +27,9 @@ HOME="$(dirname "$(readlink -f $0)")"
 
 # DOWNLOAD AND INSTALL JUNEST (DON'T TOUCH THIS)
 git clone https://github.com/fsquillace/junest.git ~/.local/share/junest
-./.local/share/junest/bin/junest setup
+wget -q --show-progress https://github.com/ivan-hc/junest/releases/download/continuous/junest-x86_64.tar.gz
+./.local/share/junest/bin/junest setup -i junest-x86_64.tar.gz
+rm -f junest-x86_64.tar.gz
 
 # ENABLE MULTILIB (optional)
 echo "
@@ -43,9 +45,12 @@ Include = /etc/pacman.d/mirrorlist" >> ./.junest/etc/pacman.conf
 ###Include = /etc/pacman.d/chaotic-mirrorlist" >> ./.junest/etc/pacman.conf
 
 # CUSTOM MIRRORLIST, THIS SHOULD SPEEDUP THE INSTALLATION OF THE PACKAGES IN PACMAN (COMMENT EVERYTHING TO USE THE DEFAULT MIRROR)
-#COUNTRY=$(curl -i ipinfo.io | grep country | cut -c 15- | cut -c -2)
-#rm -R ./.junest/etc/pacman.d/mirrorlist
-#wget -q https://archlinux.org/mirrorlist/?country="$(echo $COUNTRY)" -O - | sed 's/#Server/Server/g' >> ./.junest/etc/pacman.d/mirrorlist
+_custom_mirrorlist(){
+	COUNTRY=$(curl -i ipinfo.io | grep country | cut -c 15- | cut -c -2)
+	rm -R ./.junest/etc/pacman.d/mirrorlist
+	wget -q https://archlinux.org/mirrorlist/?country="$(echo $COUNTRY)" -O - | sed 's/#Server/Server/g' >> ./.junest/etc/pacman.d/mirrorlist
+}
+#_custom_mirrorlist
 
 # BYPASS SIGNATURE CHECK LEVEL
 sed -i 's/#SigLevel/SigLevel/g' ./.junest/etc/pacman.conf
@@ -317,7 +322,7 @@ _saveshare 2> /dev/null
 
 # RSYNC DEPENDENCES
 #rsync -av ./deps/usr/bin/* ./$APP.AppDir/.junest/usr/bin/
-rsync -av ./deps/usr/lib/* ./$APP.AppDir/.junest/usr/lib/
+#rsync -av ./deps/usr/lib/* ./$APP.AppDir/.junest/usr/lib/
 #rsync -av ./deps/usr/share/* ./$APP.AppDir/.junest/usr/share/
 
 # ADDITIONAL REMOVALS
