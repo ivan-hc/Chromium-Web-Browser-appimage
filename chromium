@@ -6,14 +6,24 @@ mkdir tmp;
 cd tmp;
 
 # DOWNLOADING THE DEPENDENCIES
-wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$(uname -m).AppImage -O appimagetool
-wget https://raw.githubusercontent.com/ivan-hc/AM-application-manager/main/tools/pkg2appimage
+if test -f ./appimagetool; then
+	echo " appimagetool already exists" 1> /dev/null
+else
+	echo " Downloading appimagetool..."
+	wget -q "$(wget -q https://api.github.com/repos/probonopd/go-appimage/releases -O - | sed 's/"/ /g; s/ /\n/g' | grep -o 'https.*continuous.*tool.*86_64.*mage$')" -O appimagetool
+fi
+if test -f ./pkg2appimage; then
+	echo " pkg2appimage already exists" 1> /dev/null
+else
+	echo " Downloading pkg2appimage..."
+	wget -q https://raw.githubusercontent.com/ivan-hc/AM-application-manager/main/tools/pkg2appimage
+fi
 chmod a+x ./appimagetool ./pkg2appimage
+rm -f ./recipe.yml
 
 DEBRELEASE="oldstable"
-VERSION=$(echo $(wget -q https://packages.debian.org/$DEBRELEASE/amd64/chromium/download -O - | grep ".deb" | head -1 | grep -o -P '(?<=chromium_).*(?=_amd64)'))
 
-# CREATING THE APPIMAGE: APPDIR FROM A RECIPE...
+# CREATING THE APPIMAGE'S RECIPE...
 echo "app: chromium
 binpatch: true
 
@@ -24,16 +34,31 @@ ingredients:
     - deb http://ftp.debian.org/debian/ $DEBRELEASE main contrib non-free
     - deb http://security.debian.org/$DEBRELEASE-security/ $DEBRELEASE-security main contrib non-free
     - deb http://ftp.debian.org/debian/ $DEBRELEASE-updates main contrib non-free
-  script:
-    - wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(wget -q https://packages.debian.org/$DEBRELEASE/amd64/chromium/download -O - | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
-    - wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(wget -q https://packages.debian.org/$DEBRELEASE/amd64/chromium-common/download -O - | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
-    - wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(wget -q https://packages.debian.org/$DEBRELEASE/amd64/chromium-driver/download -O - | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
-    - wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(wget -q https://packages.debian.org/$DEBRELEASE/all/chromium-l10n/download -O - | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
-    - wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(wget -q https://packages.debian.org/$DEBRELEASE/amd64/chromium-sandbox/download -O - | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
   packages:
-    - chromium" >> recipe.yml;
+    - chromium" >> recipe.yml
 
-./pkg2appimage ./recipe.yml;
+mkdir -p ./$APP/$APP.AppDir
+cd ./$APP
+
+# ...DOWNLOAD THE DEB PACKAGES...
+# Choose a source manually
+
+_chromium_from_debian() {
+	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/amd64/chromium/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
+	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/amd64/chromium-common/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
+	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/amd64/chromium-driver/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
+	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/all/chromium-l10n/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
+	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/amd64/chromium-sandbox/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
+}
+
+if ! test -f ./chromium_*.deb; then
+	_chromium_from_debian
+fi
+VERSION=$(ls . | sort | grep -o -P '(?<=chromium_).*(?=_amd64)' | head -1)
+
+# ...BUILD THE APPIMAGE...
+cd ..
+./pkg2appimage ./recipe.yml
 
 # ...REPLACING THE EXISTING APPRUN WITH A CUSTOM ONE...
 rm -R -f ./$APP/$APP.AppDir/AppRun
@@ -51,6 +76,6 @@ EOF
 chmod a+x ./$APP/$APP.AppDir/AppRun
 
 # ...EXPORT THE APPDIR TO AN APPIMAGE!
-ARCH=x86_64 ./appimagetool -n ./$APP/$APP.AppDir
-cd ..;
+ARCH=x86_64 VERSION=$(./appimagetool -v | grep -o '[[:digit:]]*') ./appimagetool -s ./$APP/$APP.AppDir
+cd ..
 mv ./tmp/*.AppImage ./Chromium_Web_Browser-$VERSION-x86_64.AppImage
