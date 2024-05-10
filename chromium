@@ -44,6 +44,7 @@ cd ./$APP
 # Choose a source manually
 
 _chromium_from_debian() {
+	# Debian oldstable-security, this may bee not in sync with the upstream
 	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/amd64/chromium/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
 	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/amd64/chromium-common/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
 	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/amd64/chromium-driver/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
@@ -52,7 +53,10 @@ _chromium_from_debian() {
 }
 
 if ! test -f ./chromium_*.deb; then
+	# Uncomment just one of the commands down below
+
 	_chromium_from_debian
+
 fi
 VERSION=$(ls . | sort | grep -o -P '(?<=chromium_).*(?=_amd64)' | head -1)
 
