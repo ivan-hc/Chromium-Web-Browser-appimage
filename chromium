@@ -52,10 +52,14 @@ _chromium_from_debian() {
 	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/amd64/chromium-sandbox/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
 }
 
-if ! test -f ./chromium_*.deb; then
-	# Uncomment just one of the commands down below
+_chromium_from_linux_mint() {
+	wget http://packages.linuxmint.com/pool/upstream/c/chromium/$(curl -Ls http://packages.linuxmint.com/pool/upstream/c/chromium/ | grep -Po '(?<=href=")[^"]*' | grep "chromium_" | grep "amd64.deb" | tail -3 | head -1)
+}
 
-	_chromium_from_debian
+if ! test -f ./chromium_*.deb; then
+
+	#_chromium_from_debian #uncomment to use packages from Debian repos
+	_chromium_from_linux_mint #uncomment to use packages from Linux Mint repos
 
 fi
 VERSION=$(ls . | sort | grep -o -P '(?<=chromium_).*(?=_amd64)' | head -1)
@@ -63,6 +67,9 @@ VERSION=$(ls . | sort | grep -o -P '(?<=chromium_).*(?=_amd64)' | head -1)
 # ...BUILD THE APPIMAGE...
 cd ..
 ./pkg2appimage ./recipe.yml
+
+# COMPILE SCHEMAS
+glib-compile-schemas ./$APP/$APP.AppDir/usr/share/glib-2.0/schemas/ || echo "No ./usr/share/glib-2.0/schemas/"
 
 # ...REPLACING THE EXISTING APPRUN WITH A CUSTOM ONE...
 rm -R -f ./$APP/$APP.AppDir/AppRun
@@ -78,6 +85,14 @@ export XDG_DATA_DIRS="${HERE}"/usr/share/:"${XDG_DATA_DIRS}"
 exec ${HERE}/usr/lib/chromium/chromium "$@"
 EOF
 chmod a+x ./$APP/$APP.AppDir/AppRun
+
+# IMPORT THE LAUNCHER
+if test -f ./$APP/$APP.AppDir/*.desktop; then
+	echo "The desktop file exists"
+else
+	echo "Trying to get the .desktop file"
+	cp ./$APP/$APP.AppDir/usr/share/applications/$APP*.desktop ./$APP/$APP.AppDir/ 2>/dev/null
+fi
 
 # ...EXPORT THE APPDIR TO AN APPIMAGE!
 ARCH=x86_64 VERSION=$(./appimagetool -v | grep -o '[[:digit:]]*') ./appimagetool -s ./$APP/$APP.AppDir
