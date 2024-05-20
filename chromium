@@ -21,7 +21,7 @@ fi
 chmod a+x ./appimagetool ./pkg2appimage
 rm -f ./recipe.yml
 
-DEBRELEASE="oldstable"
+DEBRELEASE="stable"
 
 # CREATING THE APPIMAGE'S RECIPE...
 echo "app: chromium
@@ -58,8 +58,8 @@ _chromium_from_linux_mint() {
 
 if ! test -f ./chromium_*.deb; then
 
-	#_chromium_from_debian #uncomment to use packages from Debian repos
-	_chromium_from_linux_mint #uncomment to use packages from Linux Mint repos
+	_chromium_from_debian #uncomment to use packages from Debian repos
+	#_chromium_from_linux_mint #uncomment to use packages from Linux Mint repos
 
 fi
 VERSION=$(ls . | sort | grep -o -P '(?<=chromium_).*(?=_amd64)' | head -1)
