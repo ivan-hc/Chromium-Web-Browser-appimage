@@ -1,6 +1,4 @@
-This repository provides the latest version of Chromium Web Browser:
-- From here you can download the script "[chromium-junest.sh](https://github.com/ivan-hc/Chromium-Web-Browser-appimage/blob/main/chromium-junest.sh)" to build on top of [JuNest](https://github.com/fsquillace/junest), the lightweight Arch Linux based distro that runs, without root privileges, on top of any other Linux distro. You can download the AppImage from [here](https://github.com/ivan-hc/Chromium-Web-Browser-appimage/releases/tag/continuous);
-- The .deb packages instead are provided by the Security Team of Debian (Oldstable), you can see get more info [here](https://packages.debian.org/oldstable/chromium). Until January 2024 I used this as a base, but the Arch Linux base (via the "ArchImage" project) gave me more guarantees of continuity than Debian. If you prefer Debian base, I recommend you fork this repository and modify the "[workflow run](https://github.com/ivan-hc/Chromium-Web-Browser-appimage/blob/main/.github/workflows/blank.yml)" redirecting it to the "[chromium](https://github.com/ivan-hc/Chromium-Web-Browser-appimage/blob/main/chromium)" script available in this repository.
+This repository provides the latest version of Chromium Web Browser built from Debian Stable.
 
 *NOTE: the 32-bit version for the old i386 architectures is available at [ivan-hc/32-bit-AppImage-packages-database](https://github.com/ivan-hc/32-bit-AppImage-packages-database), download it from [here](https://github.com/ivan-hc/32-bit-AppImage-packages-database/releases/tag/chromium).*
 
