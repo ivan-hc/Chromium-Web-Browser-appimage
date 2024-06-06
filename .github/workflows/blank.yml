@@ -19,9 +19,9 @@ jobs:
       run: |
         sudo apt update
         sudo apt install libfuse2
-        wget https://raw.githubusercontent.com/ivan-hc/Chromium-Web-Browser-appimage/main/chromium-junest.sh
-        chmod a+x ./chromium-junest.sh
-        ./chromium-junest.sh
+        wget https://raw.githubusercontent.com/ivan-hc/Chromium-Web-Browser-appimage/main/chromium
+        chmod a+x ./chromium
+        ./chromium
         mkdir dist
         mv *AppImage dist/
 
