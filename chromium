@@ -45,11 +45,11 @@ cd ./$APP
 
 _chromium_from_debian() {
 	# Debian oldstable-security, this may bee not in sync with the upstream
-	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/amd64/chromium/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
-	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/amd64/chromium-common/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
-	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/amd64/chromium-driver/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
-	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/all/chromium-l10n/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
-	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://packages.debian.org/$DEBRELEASE/amd64/chromium-sandbox/download | grep Download | head -1 | grep -o -P '(?<=Selection -- ).*(?=</title)')
+	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://security.debian.org/debian-security/pool/updates/main/c/chromium/ | tr '"' '\n' | grep "^chromium" | grep .deb | grep amd64 | tail -1)
+	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://security.debian.org/debian-security/pool/updates/main/c/chromium/ | tr '"' '\n' | grep "^chromium-common" | grep .deb | grep amd64 | tail -1)
+	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://security.debian.org/debian-security/pool/updates/main/c/chromium/ | tr '"' '\n' | grep "^chromium-driver" | grep .deb | grep amd64 | tail -1)
+	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://security.debian.org/debian-security/pool/updates/main/c/chromium/ | tr '"' '\n' | grep "^chromium-l10n" | grep .deb | grep all | tail -1)
+	wget http://security.debian.org/debian-security/pool/updates/main/c/chromium/$(curl -Ls https://security.debian.org/debian-security/pool/updates/main/c/chromium/ | tr '"' '\n' | grep "^chromium-sandbox" | grep .deb | grep amd64 | tail -1)
 }
 
 _chromium_from_linux_mint() {
