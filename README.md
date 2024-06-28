@@ -1,4 +1,4 @@
-This repository provides the latest version of Chromium Web Browser built from Debian Stable.
+This repository provides the latest version of Chromium Web Browser built as AppImage from the Snap package.
 
 *NOTE: the 32-bit version for the old i386 architectures is available at [ivan-hc/32-bit-AppImage-packages-database](https://github.com/ivan-hc/32-bit-AppImage-packages-database), download it from [here](https://github.com/ivan-hc/32-bit-AppImage-packages-database/releases/tag/chromium).*
 
