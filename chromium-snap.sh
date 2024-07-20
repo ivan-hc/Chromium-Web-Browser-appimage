@@ -76,3 +76,6 @@ mkdir -p "$CHANNEL" && cp ./appimagetool ./"$CHANNEL"/appimagetool && cd "$CHANN
 _create_chromium_appimage
 cd ..
 mv ./"$CHANNEL"/*.AppImage ./
+
+cd ..
+mv ./tmp/*.AppImage ./
