@@ -25,7 +25,7 @@ jobs:
         mv *AppImage dist/
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v1.0.0
+      uses: actions/upload-artifact@v4.0.0
       with:
         name: Chromium-Web-Browser-x86_64.AppImage
         path: 'dist'
