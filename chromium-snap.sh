@@ -49,33 +49,34 @@ _create_chromium_appimage() {
 	HEREDOC
 	chmod a+x ./"$APP".AppDir/AppRun
 
-	ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 ./$APP.AppDir
-	mv ./*.AppImage ./Chromium-"$CHANNEL"-"$VERSION"-x86_64.AppImage
+	ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 \
+	-u "gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|Chromium-Web-Browser-appimage|continuous|*x86_64.AppImage.zsync" \
+	./"$APP".AppDir Chromium-"$CHANNEL"-"$VERSION"-x86_64.AppImage || exit 1
 }
 
 CHANNEL="stable"
 mkdir -p "$CHANNEL" && cp ./appimagetool ./"$CHANNEL"/appimagetool && cd "$CHANNEL" || exit 1
 _create_chromium_appimage
 cd ..
-mv ./"$CHANNEL"/*.AppImage ./
+mv ./"$CHANNEL"/*.AppImage* ./
 
 CHANNEL="candidate"
 mkdir -p "$CHANNEL" && cp ./appimagetool ./"$CHANNEL"/appimagetool && cd "$CHANNEL" || exit 1
 _create_chromium_appimage
 cd ..
-mv ./"$CHANNEL"/*.AppImage ./
+mv ./"$CHANNEL"/*.AppImage* ./
 
 CHANNEL="beta"
 mkdir -p "$CHANNEL" && cp ./appimagetool ./"$CHANNEL"/appimagetool && cd "$CHANNEL" || exit 1
 _create_chromium_appimage
 cd ..
-mv ./"$CHANNEL"/*.AppImage ./
+mv ./"$CHANNEL"/*.AppImage* ./
 
 CHANNEL="edge"
 mkdir -p "$CHANNEL" && cp ./appimagetool ./"$CHANNEL"/appimagetool && cd "$CHANNEL" || exit 1
 _create_chromium_appimage
 cd ..
-mv ./"$CHANNEL"/*.AppImage ./
+mv ./"$CHANNEL"/*.AppImage* ./
 
 cd ..
-mv ./tmp/*.AppImage ./
+mv ./tmp/*.AppImage* ./
