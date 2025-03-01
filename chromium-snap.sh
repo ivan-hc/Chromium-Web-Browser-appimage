@@ -33,7 +33,7 @@ _create_chromium_appimage() {
 	mv ./squashfs-root/lib ./"$APP".AppDir/
 	mv ./squashfs-root/usr ./"$APP".AppDir/
 	mv ./squashfs-root/*.png ./"$APP".AppDir/
-	mv ./squashfs-root/bin/*.desktop ./"$APP".AppDir/
+	mv ./squashfs-root/bin/*"$APP"*.desktop ./"$APP".AppDir/
 	sed -i 's#/chromium.png#chromium#g' ./"$APP".AppDir/*.desktop
 
 	cat <<-'HEREDOC' >> ./"$APP".AppDir/AppRun
