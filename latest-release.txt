@@ -1,4 +1,4 @@
 https://github.com/ivan-hc/Chromium-Web-Browser-appimage/releases/download/continuous/Chromium-beta-136.0.7103.33-x86_64.AppImage
-https://github.com/ivan-hc/Chromium-Web-Browser-appimage/releases/download/continuous/Chromium-candidate-135.0.7049.114-x86_64.AppImage
+https://github.com/ivan-hc/Chromium-Web-Browser-appimage/releases/download/continuous/Chromium-candidate-136.0.7103.59-x86_64.AppImage
 https://github.com/ivan-hc/Chromium-Web-Browser-appimage/releases/download/continuous/Chromium-edge-137.0.7141.3-x86_64.AppImage
-https://github.com/ivan-hc/Chromium-Web-Browser-appimage/releases/download/continuous/Chromium-stable-135.0.7049.114-x86_64.AppImage
+https://github.com/ivan-hc/Chromium-Web-Browser-appimage/releases/download/continuous/Chromium-stable-136.0.7103.59-x86_64.AppImage
