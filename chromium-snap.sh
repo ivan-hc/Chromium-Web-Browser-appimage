@@ -29,9 +29,7 @@ _create_chromium_appimage() {
 	mkdir -p "$APP".AppDir
 	VERSION=$(cat ./squashfs-root/snap/*.yaml | grep "^version" | head -1 | cut -c 10-)
 
-	mv ./squashfs-root/etc ./"$APP".AppDir/
-	mv ./squashfs-root/lib ./"$APP".AppDir/
-	mv ./squashfs-root/usr ./"$APP".AppDir/
+	mv ./squashfs-root/usr/lib/chromium*/* ./"$APP".AppDir/
 	mv ./squashfs-root/*.png ./"$APP".AppDir/
 	mv ./squashfs-root/bin/*"$APP"*.desktop ./"$APP".AppDir/
 	sed -i 's#/chromium.png#chromium#g' ./"$APP".AppDir/*.desktop
@@ -40,7 +38,7 @@ _create_chromium_appimage() {
 	#!/bin/sh
 	HERE="$(dirname "$(readlink -f "${0}")")"
 	export UNION_PRELOAD="${HERE}"
-	exec ${HERE}/usr/lib/chromium*/chrome "$@"
+	exec ${HERE}/chrome "$@"
 	HEREDOC
 	chmod a+x ./"$APP".AppDir/AppRun
 
