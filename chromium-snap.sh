@@ -33,6 +33,7 @@ _create_chromium_appimage() {
 	mv ./squashfs-root/*.png ./"$APP".AppDir/
 	mv ./squashfs-root/bin/*"$APP"*.desktop ./"$APP".AppDir/
 	sed -i 's#/chromium.png#chromium#g' ./"$APP".AppDir/*.desktop
+	sed -i 's#StartupWMClass=chromium$#StartupWMClass=chromium-browser#g' ./"$APP".AppDir/*.desktop
 
 	cat <<-'HEREDOC' >> ./"$APP".AppDir/AppRun
 	#!/bin/sh
