@@ -8,7 +8,7 @@ cd ./tmp || exit 1
 
 # DOWNLOAD APPIMAGETOOL
 if ! test -f ./appimagetool; then
-	wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+	wget -q https://github.com/ivan-hc/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
 	chmod a+x ./appimagetool
 fi
 
